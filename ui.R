@@ -1,14 +1,12 @@
-my_ui <- navbarPage("My Application",
-                 tabPanel("Component 1",
-                          sidebarLayout(
-                            sidebarPanel(
-                              textInput("Input text", "text")
-                            ),
-                            mainPanel()
-                          )),
-                 tabPanel("Component 2"),
-                 tabPanel("Component 3"),
-                 tabPanel("Component 4")
+source("./layout_files/pop_culture.R")
+
+my_ui <- navbarPage("Pop Culture",
+                 tabPanel("Public Figures",
+                          pop_culture
+                          ),
+                 tabPanel("Sports"),
+                 tabPanel("Viral Trends"),
+                 tabPanel("TV Shows")
 )
 
 shinyUI(my_ui)

@@ -1,8 +1,5 @@
-users <- read.delim("./users.csv", stringsAsFactors = FALSE, sep = ";")
-media <- read.delim("./media.csv", stringsAsFactors = FALSE, sep =";")
-View(users)
-
 library(twitteR)
+<<<<<<< Updated upstream
 source("keys.R")
 setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 
@@ -20,3 +17,27 @@ result[1:10]
 
 
 rt <- twitteR::searchTwitter()
+=======
+source(keys.R)
+setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
+
+
+tw = twitteR::searchTwitter('#yanny', n = 1000, since = '2000-11-08', retryOnRateLimit = 1e3)
+d = twitteR::twListToDF(tw)
+print(d$text)  
+
+View(d)
+
+
+tw = twitteR::getTrends(woeid = 12798949, exclude = NULL)
+`twitteR::get
+
+woeid = twitteR::availableTrendLocations[1, "woeid"]
+t1 <- getTrends(woeid)
+
+trends <- getTrends(2459115)
+head(trends)
+
+trendLocation <- availableTrendLocations()
+trendLocation
+>>>>>>> Stashed changes
