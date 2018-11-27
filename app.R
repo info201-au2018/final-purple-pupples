@@ -4,5 +4,7 @@
 
 library(shiny)
 
+source("setup.R")
+
 #Create shiny Object.
 shinyApp(ui = my_ui, server = my_server)
