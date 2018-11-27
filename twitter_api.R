@@ -2,9 +2,9 @@ users <- read.delim("./users.csv", stringsAsFactors = FALSE, sep = ";")
 media <- read.delim("./media.csv", stringsAsFactors = FALSE, sep =";")
 View(users)
 
-library(rtweet)
+library(twitteR)
 source("keys.R")
-token <- create_token(app ="R Shiny analytics project", consumer_key_val, consumer_secret_val)
+setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 
 
 tw = twitteR::searchTwitter('#maga', n = 1000, since = '2000-11-08', retryOnRateLimit = 1e3)
