@@ -1,5 +1,8 @@
 library(dplyr)
 library(data.table)
+library(tidyr)
+library(ggplot2)
+library(ggthemes)
 #GETTING DATA
 
 #KARDASHIANS

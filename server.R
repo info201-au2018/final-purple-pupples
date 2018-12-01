@@ -1,4 +1,6 @@
 source("./server_files/tv_shows_server.R")
+source("./server_files/public_figures.R")
+
 my_server <- function(input, output){
 getTable <- reactive({
   table <- kardashian_tweets
@@ -33,6 +35,17 @@ getTable <- reactive({
     data()
   })
   output$tweetTable <- renderDataTable({getTable()})
+
+
+  output$word_cloud_text <- renderText(
+    word_cloud_message(input)
+  )
+  output$public_figure_word_cloud <- renderPlot({
+    word_cloud(input)
+  }, width = 800, height = 600)
+
+  
+  
 }
 
 shinyServer(my_server)
