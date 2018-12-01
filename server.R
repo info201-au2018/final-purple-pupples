@@ -2,14 +2,14 @@ source("./server_files/tv_shows_server.R")
 source("./server_files/public_figures.R")
 
 my_server <- function(input, output){
-getTable <- reactive({
-  table <- kardashian_tweets
-  if(input$text != "") {
-  table <- get_tweets(input$text)
-  table <- get_top_tweets(table)
- }
-  table
-})
+  getTable <- reactive({
+    table <- kardashian_tweets
+    if(input$text != "") {
+    table <- get_tweets(input$text)
+    table <- get_top_tweets(table)
+   }
+    table
+  })
   output$TV_times <- renderPlot({
     plots
   })
