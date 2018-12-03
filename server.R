@@ -1,5 +1,6 @@
 source("./server_files/tv_shows_server.R")
 source("./server_files/public_figures.R")
+source("./server_files/sports_server.R")
 
 my_server <- function(input, output){
 getTable <- reactive({
@@ -44,7 +45,9 @@ getTable <- reactive({
     word_cloud(input)
   }, width = 800, height = 600)
 
-  
+  output$sports <- renderPlot({
+    TweetScorePlot(input$team_name, input$week)
+  })
   
 }
 
