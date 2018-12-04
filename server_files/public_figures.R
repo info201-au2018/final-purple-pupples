@@ -45,10 +45,9 @@ description_table <- function(input) {
 
 table_description <- function(input) {
   message <- paste("This data table displays a picture of each Twitter user in addition to their twitter username,
-                   a description of who they are, whether or not they are verified, and thier latest tweet.")
+                   a description of who they are, whether or not they are verified, and their latest tweet.")
   return(message)
 }
-
 
 bar_graph_tweets <- function(input) {
   #type <- "statusesCount"

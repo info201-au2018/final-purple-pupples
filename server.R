@@ -75,6 +75,7 @@ my_server <- function(input, output){
   output$data_table_description <- renderText({
     table_description(input)
   })
+  
 }
 
 
