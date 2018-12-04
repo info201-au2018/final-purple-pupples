@@ -67,8 +67,7 @@ bar_graph_tweets <- function(input) {
   plot <- barplot(counts, main = paste("Comparing # of Tweets between", user1_name, "and", user2_name),
                      xlab = "Twitter User", names.arg = c(user1_name, user2_name), ylab = "# of Tweets",
                   col = pal)
-  text(x = plot, y = counts, label = counts, pos = 3, cex = 1.5, col = "blue")
-  
+  text(plot, counts, label = counts, pos = 3, cex = 1.5, col = "blue", xpd = NA)
   return(plot)
 }
 
@@ -89,7 +88,7 @@ bar_graph_followers <- function(input) {
   plot <- barplot(counts, main = paste("Comparing # of Followers between", user1_name, "and", user2_name),
                   xlab = "Twitter User", names.arg = c(user1_name, user2_name), ylab = "# of Followers",
                   col = pal)
-  text(x = plot, y = counts, label = counts, pos = 3, cex = 1.5, col = "blue")
+  text(plot, counts, label = counts, pos = 3, cex = 1.5, col = "blue", xpd = NA)
   return(plot)
   
 }
