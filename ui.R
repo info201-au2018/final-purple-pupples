@@ -3,6 +3,7 @@ source("./layout_files/tv_shows.R")
 source("./layout_files/Trends.R")
 source("./server_files/Trending.R")
 source("./layout_files/home_ui.R")
+source("./layout_files/sports_ui.R")
 library(shinythemes)
 
 
@@ -15,14 +16,15 @@ my_ui <- fluidPage(
              tabPanel("Public Figures",
                       pop_culture
              ),
-             tabPanel("Sports"),
              tabPanel("Trending Topics",
                       trends
              ),
+             tabPanel("Sports",
+                      sports),
              tabPanel("TV Shows",
                       tv_shows)
   )
-
+  
 )
 
 shinyUI(my_ui)
