@@ -15,7 +15,7 @@ my_ui <- fluidPage(
              tabPanel("TV Shows",
                       tv_shows)
   )
-
+  
 )
 
 shinyUI(my_ui)
