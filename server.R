@@ -101,7 +101,6 @@ my_server <- function(input, output){
   
   output$compare_users_graph <- renderPlot({
    public_figures_plot()}, width = 800, height = 800)
-  })
 
 
   output$data_table_description <- renderText({
