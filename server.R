@@ -1,5 +1,6 @@
 source("./server_files/tv_shows_server.R")
 source("./server_files/public_figures.R")
+source("./server_files/sports_server.R")
 
 my_server <- function(input, output){
   getTable <- reactive({
@@ -67,7 +68,15 @@ my_server <- function(input, output){
   output$public_figure_word_cloud <- renderPlot({
     word_cloud(input)
   }, width = 1000, height = 800)
+
+  output$sports <- renderPlot({
+    TweetScorePlot(input$team_name, input$week)
+  })
   
+  output$player <- renderPlot({
+    PlotPlayerStats(input$team_player, input$player_name)
+  })
+    
   output$user1_image <- renderUI({
     tags$img(src = user1_image_url(input), height = 75,
              width = 75)
@@ -91,6 +100,7 @@ my_server <- function(input, output){
   
   output$compare_users_graph <- renderPlot({
    public_figures_plot()}, width = 800, height = 800)
+  })
 
 
   output$data_table_description <- renderText({

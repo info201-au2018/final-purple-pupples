@@ -1,5 +1,6 @@
 source("./layout_files/pop_culture.R")
 source("./layout_files/tv_shows.R")
+source("./layout_files/sports_ui.R")
 library(shinythemes)
 
 my_ui <- fluidPage(
@@ -8,7 +9,8 @@ my_ui <- fluidPage(
              tabPanel("Public Figures",
                       pop_culture
              ),
-             tabPanel("Sports"),
+             tabPanel("Sports",
+                      sports),
              tabPanel("Viral Trends"),
              tabPanel("TV Shows",
                       tv_shows)
