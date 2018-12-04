@@ -8,12 +8,15 @@ library(ggplot2)
 library(directlabels)
 library(grid)
 library(lubridate)
+theme_set(theme_classic())
 #I will also be using data from sportrader Api to 
 #compare twitter data against scores and odds from the games
 source("twitter_keys.R")
 
-##Given a Team Name and a Week of the 2018 NFL season will return the GameID for 
-##the specified parameters
+####################################
+##Give a Name and a Week get an ID##
+####################################
+
 GetGameID <- function(teamName, week) {
   print(teamName)
   nfl_uri <- paste0("https://api.sportradar.us/nfl/official/trial/v5/en/games/2018/REG/",week,
@@ -30,7 +33,10 @@ GetGameID <- function(teamName, week) {
   temp %>% filter(row_identifier) %>% select(id)
 }
 
-##Given a GameID will return the scores of a game and time formatted into a dataFrame
+######################
+##Retrieve Box Score##
+######################
+
 GetBoxScore <- function(game_id){
   nfl_uri <- paste0("https://api.sportradar.us/nfl/official/trial/v5/en/games/",
                     game_id, "/boxscore.json?api_key=",nfl_key)
@@ -49,7 +55,10 @@ GetBoxScore <- function(game_id){
   
 }
 
-##Returns a 2 column frame with 10 minute interval and the number of tweets
+###########################################################
+####Function that retrieves Tweets about a specific game###
+###########################################################
+
 GetTweetsAboutGame <- function(team_name, date_p, score_df){
   #Create date and time bounds
   date <- as.Date(ExtractDate(date_p))
@@ -58,7 +67,8 @@ GetTweetsAboutGame <- function(team_name, date_p, score_df){
   time_bounds <- c(st_time = AddTime(time, score_df$offset[1]), 
                                      end_time = AddTime(time, score_df$offset[1] + 3))
   
-  #Scrape twitter for all tweets during the given day interval
+  #Scrape twitter for all tweets during the given day interval, tries 100000 tweets
+  #But if there are not enough will try again at 7000 which usually works :/ R
   results <- tryCatch({
     suppressWarnings(twitteR::searchTwitter(paste0("#", team_name), n = 10000, since = as.character(date - 1), 
                                              until = as.character(date + 1), retryOnRateLimit = 1e3, lang = "en"))
@@ -95,6 +105,100 @@ GetTweetsAboutGame <- function(team_name, date_p, score_df){
   tweet_count <- game_tweets %>% group_by(interval) %>% summarise(n = n()) %>% filter(!is.na(interval))
 }
 
+
+##############################################
+###Start of First Plot (Twitter and Sports)###
+##############################################\
+
+TweetScorePlot <- function(name, week) {
+  
+  id <- GetGameID(name, week)
+  print(id)
+  Sys.sleep(3) #Have to do this due to restrictions on API key
+  
+  score_df <- GetBoxScore(id)
+  preload <- tryCatch({
+    preload <- GetPreload(score_df$home_name[1], score_df$away_name[1], week)
+    home_score <- preload %>% filter(label == score_df$home_name[1])
+    away_score <- preload %>% filter(label == score_df$away_name[1])
+    t_count <- preload %>% filter(label == "TWEETS")
+    x_axis <- unique(round((preload$formatted - min(preload$formatted)) / 60))
+  }, error = function(cond) {
+    print(cond)
+    t_count <- GetTweetsAboutGame(name, score_df$scheduled, score_df)
+    t_count$formatted <- FormatTime(t_count$interval)
+    t_count$label <- "TWEETS"
+    
+    score_df$formatted <- ymd_hms(score_df$time)
+    
+    if (anyNA(score_df$formatted)) {
+      print("NAs INtroduced")
+      hours <- hour(score_df$formatted) + score_df$offset
+      hours <- ifelse(hours < 0, 24 + hours, hours)
+      score_df$formatted <- paste(paste(year(score_df$formatted),month(score_df$formatted),
+                                        day(score_df$formatted), sep = "-"),
+                                  paste(hours, minute(score_df$formatted),
+                                      second(score_df$formatted), sep = ":"))
+      score_df$formatted <- ymd_hms(score_df$formatted)
+      score_df$formatted <- FillNAs(score_df$formatted)
+    } else {
+      print("NO NAs Introduced")
+      score_df$formatted <- hms(paste(hour(score_df$formatted), minute(score_df$formatted), 
+                                    second(score_df$formatted), sep = ":"))
+    }
+    
+    home_score <- select(score_df, home, formatted)
+    away_score <- select(score_df, away, formatted)
+    t_count <- select(t_count, num_tweets = n, formatted, label)
+    t_count$formatted <- t_count$formatted %>% hms()
+    t_count$score <- NA
+    home_score$label <- as.character(score_df$home_name[1]) #Replace with team names
+    away_score$label <- as.character(score_df$away_name[1]) #Replce with team names
+    names(home_score)[1] <- "score"
+    names(away_score)[1] <- "score"
+    scores <- rbind(home_score, away_score)
+    scores$num_tweets <- NA
+    scores <- rbind(scores, t_count)
+    scores$formatted <- as.numeric(scores$formatted)
+    write.csv(scores, paste0("./csv_files/", home_score$label[1],"_",away_score$label[1],"_",week,".csv"), row.names = FALSE)
+    x_axis <- round(scores$formatted - min(scores$formatted) / 60)
+    return(ggplot() + geom_line(data = away_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) +
+             geom_line(data = home_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) + 
+             geom_line(data = t_count, aes(x = as.numeric(formatted), y = num_tweets, group = 1, color = label)) + 
+             scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Tweets")) + 
+             scale_x_discrete(labels = x_axis) + theme(axis.text.x=element_text(colour="blue",size=10)) +
+             labs(title = "Scores vs Tweets", x = "Elapsed Time (minutes)", y = "Score"))
+  })
+    
+  ggplot() + geom_line(data = away_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) +
+    geom_line(data = home_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) + 
+    geom_line(data = t_count, aes(x = as.numeric(formatted), y = num_tweets, group = 1, color = label)) + 
+    scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Tweets")) + 
+    scale_x_discrete(labels = x_axis) + theme(axis.text.x=element_text(colour="blue",size=10)) +
+    labs(title = "Scores vs Tweets", x = "Elapsed Time (minutes)", y = "Score")
+  
+}
+
+##Fill NA values in hms format
+FillNAs <- function(q) {
+  count <- 1
+  r <- c()
+  for (i in q) {
+    if(is.na(i)) {
+      r <- c(r, count)
+    }
+    count <- count + 1
+  }
+  
+  u <- paste(floor((hour(q[r + 1]) + hour(q[r - 1])) / 2), 
+             floor((60 - minute(q[r + 1]) + minute(q[r - 1])) /2), 
+             floor((60 - second(q[r + 1]) + second(q[r - 1]))/2), sep = ":")
+  q <- suppressWarnings(hms(paste(hour(q), minute(q), second(q), sep = ":")))
+  q[r] <- hms(u)
+  return(q)
+  
+}
+
 ##Extracts Date from the format yy/mm/ddT
 ExtractDate <- function(t) {
   date_time <- strsplit(t, "T")
@@ -119,75 +223,83 @@ FormatTime <- function(t) {
   paste(hour(t), minute(t), second(t), sep=":")
 }
 
-TweetScorePlot <- function(name, week) {
-  
-  id <- GetGameID(name, week)
-  print(id)
-  Sys.sleep(3) #Have to do this due to restrictions on API key
-  
-  score_df <- GetBoxScore(id)
-  preload <- GetPreload(score_df$home_name[1], score_df$away_name[1], week)
-  t_count <- GetTweetsAboutGame(name, score_df$scheduled, score_df)
-  if (is.character(t_count)) {
-    return(t_count)
-    break
-  }
-  t_count$formatted <- FormatTime(t_count$interval)
-  t_count$label <- "TWEETS"
-  score_df$formatted <- FormatTime(ymd_hms(score_df$time))
-  score_df$formatted <- hms(score_df$formatted)
-  hours <- hour(score_df$formatted) + score_df$offset
-  hours <- ifelse(hours < 0, 24 + hours, hours)
-  score_df$formatted <- hms(paste(hours, minute(score_df$formatted),
-                                  second(score_df$formatted), sep = ":"))
-  score_df$formatted <- FillNAs(score_df$formatted)
-  home_score <- select(score_df, home, formatted)
-  away_score <- select(score_df, away, formatted)
-  t_count <- select(t_count, num_tweets = n, formatted, label)
-  t_count$formatted <- t_count$formatted %>% hms()
-  t_count$score <- NA
-  home_score$label <- as.character(score_df$home_name[1]) #Replace with team names
-  away_score$label <- as.character(score_df$away_name[1]) #Replce with team names
-  names(home_score)[1] <- "score"
-  names(away_score)[1] <- "score"
-  scores <- rbind(home_score, away_score)
-  scores$num_tweets <- NA
-  scores <- rbind(scores, t_count)
-  scores$formatted <- unlist(scores$formatted)
-  write.csv(scores, paste0("./csv_files/", home_score$label[1],"_",away_score$label[1],"_",week,".csv"), row.names = FALSE)
-  x_axis <- round(seq(0, 360, by = 360 / nrow(scores)))
-  ggplot() + geom_line(data = away_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) +
-    geom_line(data = home_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) + 
-    geom_line(data = t_count, aes(x = as.numeric(formatted), y = num_tweets, group = 1, color = label)) + 
-    scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Tweets")) + 
-    scale_x_discrete(labels = x_axis) + theme(axis.text.x=element_text(colour="blue",size=10)) +
-    labs(title = "Scores vs Tweets", x = "Elapsed Time (minutes)", y = "Score")
-  
-}
-
-FillNAs <- function(q) {
-  count <- 1
-  r <- c()
-  for (i in q) {
-    if(is.na(i)) {
-      r <- c(r, count)
-    }
-    count <- count + 1
-  }  
-  q[r] <- hms(paste(floor((hour(q[r + 1]) + hour(q[r - 1])) / 2), 
-                floor((60 - minute(q[r + 1]) + minute(q[r - 1])) /2), 
-                floor((60 - second(q[r + 1]) + second(q[r - 1]))/2)))
-  return(q)
-  
-}
-
+#Retrieve a preloaded csv for analysis 
 GetPreload <- function(h_name, a_name, week) {
   preload <- read.csv(paste0("./csv_files/", h_name,"_", a_name, "_", week, ".csv"))
 }
 
 
-#TODO: Seperate tweets into to two groups one containing home team mention, other with away team mentions
-#TODO: Create plot overlaying scores and # of mentions for each time
-#TODO: Abstract out to any sport? i.e ncaa football, squash, curling...
+################################################
+######This is the start of the second plot######
+################################################
 
-#TODO: What other visualizations can you do?
+#Does not use twitter api, only sportTrader thank god
+
+PlotPlayerStats <- function(team, player) {
+  name_id <- read.csv("./csv_files/teamnames-ids.csv", stringsAsFactors = FALSE)
+  id <- name_id %>% filter(str_detect(name, paste0("(?i)",team)))
+  team_roster_url <- paste0("https://api.sportradar.us/nfl/official/trial/v5/en/teams/", id$id,
+  "/full_roster.JSON?api_key=",nfl_key)
+  response <- GET(team_roster_url)
+  body <- httr::content(response, "text")
+  results <- fromJSON(body)
+  player_info <- results$players %>% select(id, name)
+  p_id <- player_info %>% filter(tolower(name) == tolower(player))
+  
+  Sys.sleep(1.5)
+  
+  player_stats_url <- paste0("https://api.sportradar.us/nfl/official/trial/v5/en/players/", 
+                             p_id$id, "/profile.JSON?api_key=", nfl_key)
+  response <- GET(player_stats_url)
+  body <- httr::content(response, "text")
+  player_results <- fromJSON(body)
+  temp <- player_results$seasons$teams
+  start_year <- player_results$rookie_year
+  seasons <- player_results$seasons %>% select(year)
+  stats <- data.frame(matrix(ncol = 2, nrow = 0))
+  if ("passing" %in% colnames(temp[[1]]$statistics) | "rushing" %in% colnames(temp[[1]]$statistics)) {
+    names <- c("i", "touchdowns")
+    colnames(stats) <- names
+    
+    for (i in 1:length(temp)) {
+      if (!is.null(temp[[i]]$statistics$passing)) {
+        print(!is.null(temp[[i]]$statistics$passing))
+        s <- temp[[i]]$statistics$passing %>% select(touchdowns)
+      }
+      if (!is.null(temp[[i]]$statistics$rushing)) {
+        s <- s + temp[[i]]$statistics$rushing %>% select(touchdowns)
+      }
+      interm <- data.frame(i, s)
+      stats <- rbind(stats, interm)
+    }
+    p_data <- data.table(stats, seasons) %>% group_by(year)  %>% summarize(Touchdowns = sum(touchdowns))
+    x_axis <- seq(start_year, start_year + nrow(p_data) - 1, by = 1)
+    ggplot(data = p_data, aes(year, Touchdowns, fill = Touchdowns)) + geom_bar(stat = "identity") + labs(title = "Touchdowns per Year", x = "Year") + 
+      geom_text(color = "black", label = p_data$Touchdowns, nudge_y = 2)
+  } else {
+    names <- c("i", "tackles")
+    colnames(stats) <- names
+    
+    for (i in 1:length(temp)) {
+      if (is.na(temp[[i]]$statistics$defense)) {
+        interm <- data.frame(i, temp[[i]]$statistics$defense %>% select(tackles))
+      }
+      stats <- rbind(stats, interm)
+    }
+    p_data <- data.table(stats, seasons) %>% group_by(year)  %>% summarize(Tackles = sum(tackles))
+    x_axis <- seq(start_year, start_year + nrow(p_data) - 1, by = 1)
+    ggplot(data = p_data, aes(year, Tackles, fill = Tackles)) + geom_bar(stat = "identity") + labs(title = "Tackles per Year", x = "Year") +
+      geom_text(color = "black", label = p_data$Tackles, nudge_y = 2)
+  }
+
+}
+
+
+
+
+
+
+
+
+
+

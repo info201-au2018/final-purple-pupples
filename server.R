@@ -49,6 +49,10 @@ getTable <- reactive({
     TweetScorePlot(input$team_name, input$week)
   })
   
+  output$player <- renderPlot({
+    PlotPlayerStats(input$team_player, input$player_name)
+  })
+  
 }
 
 shinyServer(my_server)
