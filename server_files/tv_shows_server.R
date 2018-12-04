@@ -57,11 +57,11 @@ kardashians_data <- get_tweet_times(kardashians_filtered)
 ahs_data <- get_tweet_times(ahs_filtered)
 voice_data <- get_tweet_times(voice_filtered)
 
-plots <- ggplot() +
-  geom_line(aes(x = time, y = count, color = "Keeping Up With the Kardashians: Airs 21:00 PM PT", group = 1), data = kardashians_data, stat = "identity") +
-  geom_line(aes(x = time, y = count, color = "American Horror Story: Airs 19:00 PM PT", group = 1), data = ahs_data, stat = "identity") +
-  geom_line(aes(x = time, y = count, color = "The Voice: Airs 20:00 PM PT", group = 1), data = voice_data, stat = "identity") +
-  xlab("Time (PT)") + ylab("# of Tweets")
+    plots <- ggplot() +
+      geom_line(aes(x = time, y = count, color = "Keeping Up With the Kardashians: Airs 21:00 PM PT", group = 1), data = kardashians_data, stat = "identity") +
+      geom_line(aes(x = time, y = count, color = "American Horror Story: Airs 19:00 PM PT", group = 1), data = ahs_data, stat = "identity") +
+      geom_line(aes(x = time, y = count, color = "The Voice: Airs 20:00 PM PT", group = 1), data = voice_data, stat = "identity") +
+      xlab("Time (PT)") + ylab("# of Tweets")
 
     favorites <- select(kardashians_filtered, favoriteCount, time) %>%
                 group_by(favoriteCount, time) %>% summarize(count = n())
