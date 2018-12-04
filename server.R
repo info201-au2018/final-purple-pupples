@@ -1,5 +1,6 @@
 source("./server_files/tv_shows_server.R")
 source("./server_files/public_figures.R")
+source("./server_files/Trending.R")
 source("./server_files/sports_server.R")
 
 my_server <- function(input, output){
@@ -107,8 +108,44 @@ my_server <- function(input, output){
     table_description(input)
   })
   
-}
+  # #kaitlyn
+  dt_data <- reactive({
+      kc_data <- all_country_data
+      #print(input$country)
+      if (input$country != "All") {
+        kc_data <- filter(kc_data, country == input$country)
+      }
+      
+      if (input$link != "All") {
+        kc_data <- filter[kc_data, url == input$link]
+      }
+      #print(input$country)
+      
+      if (input$trend != "All") {
+         kc_data <- filter[kc_data, trend == input$trend,]
+      }
+      kc_data
+    })
+    output$table <- DT::renderDataTable({
+      print(input$country)
+      dt_data()})
+  # output$table <- DT::renderDataTable(DT::datatable({
+  #   data <- all_country_data
+  #   if (input$country != "All") {
+  #     data <- data[data$country == input$country,]
+  #   }
+  #   if (input$trend != "All") {
+  #     data <- data[data$trend == input$trend,]
+  #   }
+  #   if (input$url != "All") {
+  #     data <- data[data$url == input$url,]
+  #   }
+  #   data
+  # }))
+    
+  }
 
-
+# kaitlyn 
+# output$table <- DT::renderDT(DT::datatable(dt_data()))
+#kc_data <- kc_data[kc_data$country == input$country,]
 shinyServer(my_server)
-
