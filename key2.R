@@ -1,4 +1,0 @@
-consumer_key2 <- DCmycNmfZQgsG3PxeiOGUd40L
-consumer_secret2 <- ZZFSJCF4b15AytsO6N3tVdNjmwBt5gxh0TfFKzMrpPww6XUL1P
-access_token2 <- 359624891-krYAE3BVc0SlRk507dZGsLPwDlsaysqGoOA0WmZT
-access_secret2 <- Y5zQoSIyMEZsNxnd48WCrDwX5Tu8InkhUidYHGvikb2pB
