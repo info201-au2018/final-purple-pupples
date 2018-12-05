@@ -70,7 +70,7 @@ GetTweetsAboutGame <- function(team_name, date_p, score_df){
   #Scrape twitter for all tweets during the given day interval, tries 100000 tweets
   #But if there are not enough will try again at 7000 which usually works :/ R
   results <- tryCatch({
-    suppressWarnings(twitteR::searchTwitter(paste0("#", team_name), n = 10000, since = as.character(date - 1), 
+    suppressWarnings(twitteR::searchTwitter(paste0("#", team_name), n = 2890, since = as.character(date - 1), 
                                              until = as.character(date + 1), retryOnRateLimit = 1e3, lang = "en"))
   },
   error = function(cond) {
@@ -80,7 +80,7 @@ GetTweetsAboutGame <- function(team_name, date_p, score_df){
   warning = function(cond) {
     message(cond)
   }, finally = {
-    twitteR::searchTwitter(paste0("#", team_name), n = 7000, since = as.character(date - 1), 
+    twitteR::searchTwitter(paste0("#", team_name), n = 4900, since = as.character(date - 1), 
                                                 until = as.character(date + 1), retryOnRateLimit = 1e3, lang = "en")
   })
 
@@ -225,7 +225,7 @@ FormatTime <- function(t) {
 
 #Retrieve a preloaded csv for analysis 
 GetPreload <- function(h_name, a_name, week) {
-  preload <- read.csv(paste0("./csv_files/", h_name,"_", a_name, "_", week, ".csv"))
+  preload <- read.csv(paste0("./csv_files/", h_name,"_", a_name, "_", week, ".csv"), stringsAsFactors = FALSE)
 }
 
 

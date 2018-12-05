@@ -121,28 +121,28 @@ snl_fav <- get_favorites(snl_filtered)
 
 favs_plot_kardash <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Favorites, fill = "Kardashians"), stat = "identity", 
-                 data = kardash_fav, binwidth = 0.1) + coord_flip() + ylim(0, 2000) +
+                 data = kardash_fav, binwidth = 0.1) + ylim(0, 2000) +
   scale_fill_manual("Show", values = c("olivedrab")) + labs(title = "Favorites vs Time of Day",
                                                             x = "Number of Favorites", 
                                                             y = "Time (PT)")
 
 favs_plot_ahs <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Favorites, fill = "American Horror Story"), stat = "identity", 
-                 data = ahs_fav, binwidth = 0.1) + coord_flip() + ylim(0, 2000)  +
+                 data = ahs_fav, binwidth = 0.1) + ylim(0, 2000)  +
   scale_fill_manual("Show", values = c("salmon")) + labs(title = "Favorites vs Time of Day",
                                                          x = "Number of Favorites", 
                                                          y = "Time (PT)")
 
 favs_plot_voice <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Favorites, fill = "The Voice"), stat = "identity", 
-                 data = voice_fav, binwidth = 0.1) + coord_flip() + ylim(0, 2000) +
+                 data = voice_fav, binwidth = 0.1)  + ylim(0, 2000) +
   scale_fill_manual("Show", values = c("mediumorchid1")) + labs(title = "Favorites vs Time of Day",
                                                         x = "Number of Favorites", 
                                                         y = "Time (PT)")
 
 favs_plot_snl <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Favorites, fill = "SNL"), stat = "identity", 
-                 data = snl_fav, binwidth = 0.1) + coord_flip() + ylim(0, 2000)  +
+                 data = snl_fav, binwidth = 0.1) + ylim(0, 2000)  +
   scale_fill_manual("Show", values = c("cyan3")) + labs(title = "Favorites vs Time of Day",
                                                                 x = "Number of Favorites", 
                                                                 y = "Time (PT)")
@@ -155,7 +155,7 @@ favorites_plot <- ggplot() +
           geom_histogram(mapping = aes(x = time, y = Favorites, fill = "TheVoice"), stat = "identity", data = voice_fav,
                          alpha = 0.5, binwidth = 0.1) +
           geom_histogram(mapping = aes(x = time, y = Favorites, fill = "SNL"), stat = "identity", data = snl_fav,
-                 alpha = 0.5, binwidth = 0.1) + coord_flip() + labs(title = "Favorites vs Time of Day",
+                 alpha = 0.5, binwidth = 0.1)  + labs(title = "Favorites vs Time of Day",
                                                                     x = "Number of Favorites", 
                                                                     y = "Time (PT)") + ylim(0, 2000) 
 
@@ -172,28 +172,28 @@ snl_ret <- get_retweets(snl_filtered)
 
 retweets_plot_kardash <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Retweets, fill = "Kardashians"), stat = "identity", 
-                 data = kardash_ret, binwidth = 0.1) + coord_flip() + ylim(0, 20000) +
+                 data = kardash_ret, binwidth = 0.1)  + ylim(0, 20000) +
                  scale_fill_manual("Show", values = c("olivedrab")) + labs(title = "Retweets vs Time of Day",
                                                                            x = "Time (PT)", 
                                                                            y = "Number of Retweets")
 
 retweets_plot_ahs <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Retweets, fill = "American Horror Story"), stat = "identity", 
-                 data = ahs_ret, binwidth = 0.1) + coord_flip() + ylim(0, 20000) +
+                 data = ahs_ret, binwidth = 0.1)  + ylim(0, 20000) +
   scale_fill_manual("Show", values = c("salmon")) + labs(title = "Retweets vs Time of Day",
                                                          x = "Time (PT)", 
                                                          y = "Number of Retweets")
 
 retweets_plot_voice <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Retweets, fill = "The Voice"), stat = "identity", 
-                 data = voice_ret, binwidth = 0.1) + coord_flip() + ylim(0, 20000) +
+                 data = voice_ret, binwidth = 0.1) + ylim(0, 20000) +
   scale_fill_manual("Show", values = c("mediumorchid1")) + labs(title = "Retweets vs Time of Day",
                                                                 x = "Time (PT)", 
                                                                 y = "Number of Retweets")
 
 retweets_plot_snl <- ggplot() + 
   geom_histogram(mapping = aes(x = time, y = Retweets, fill = "SNL"), stat = "identity", 
-                 data = snl_ret, binwidth = 0.1) + coord_flip() + ylim(0, 20000)  +
+                 data = snl_ret, binwidth = 0.1) + ylim(0, 20000)  +
   scale_fill_manual("Show", values = c("cyan3")) + labs(title = "Retweets vs Time of Day",
                                                         x = "Time (PT)", 
                                                         y = "Number of Retweets")
@@ -205,7 +205,7 @@ gg <- ggplot() +
   geom_histogram(mapping = aes(x = time, y = Retweets, fill = "The Voice"), stat = "identity", 
                  alpha = 0.5, data = voice_ret, binwidth = 0.1) + 
   geom_histogram(mapping = aes(x = time, y = Retweets, fill = "SNL"), stat = "identity", 
-                 alpha = 0.5, data = snl_ret, binwidth = 0.1) + ylim(0, 20000) + coord_flip() +
+                 alpha = 0.5, data = snl_ret, binwidth = 0.1) + ylim(0, 20000) +
   labs(title = "Retweets vs Time of Day",
          x = "Time (PT)", 
          y = "Number of Retweets")
