@@ -2,6 +2,7 @@ library(twitteR)
 #setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 library(ggplot2)
 library(DT)
+twitteR::setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 
 # TRENDS BY COUNTRY
 australia_trends <- getTrends(23424748)

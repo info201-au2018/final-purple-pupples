@@ -5,8 +5,7 @@ source("./server_files/Trending.R")
 source("./layout_files/home_ui.R")
 source("./layout_files/sports_ui.R")
 library(shinythemes)
-
-
+twitteR::setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
 my_ui <- fluidPage(
   theme = shinytheme("cerulean"),
   navbarPage("Twitter & Pop Culture",

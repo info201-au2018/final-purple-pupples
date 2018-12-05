@@ -162,12 +162,13 @@ TweetScorePlot <- function(name, week) {
     scores$formatted <- as.numeric(scores$formatted)
     write.csv(scores, paste0("./csv_files/", home_score$label[1],"_",away_score$label[1],"_",week,".csv"), row.names = FALSE)
     x_axis <- round(scores$formatted - min(scores$formatted) / 60)
-    return(ggplot() + geom_line(data = away_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) +
+    p <- ggplot() + geom_line(data = away_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) +
              geom_line(data = home_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) + 
              geom_line(data = t_count, aes(x = as.numeric(formatted), y = num_tweets, group = 1, color = label)) + 
              scale_y_continuous(sec.axis = sec_axis(~.*1, name = "Tweets")) + 
              scale_x_discrete(labels = x_axis) + theme(axis.text.x=element_text(colour="blue",size=10)) +
-             labs(title = "Scores vs Tweets", x = "Elapsed Time (minutes)", y = "Score"))
+             labs(title = "Scores vs Tweets", x = "Elapsed Time (minutes)", y = "Score")
+  return(p)
   })
     
   ggplot() + geom_line(data = away_score, aes(x = as.numeric(formatted), y = score, group = 1, color = label)) +

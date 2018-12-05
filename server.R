@@ -3,6 +3,7 @@ source("./server_files/public_figures.R")
 source("./server_files/Trending.R")
 source("./server_files/sports_server.R")
 
+
 my_server <- function(input, output){
   getTable <- reactive({
     table <- kardashian_tweets
@@ -71,7 +72,7 @@ my_server <- function(input, output){
   }, width = 1000, height = 800)
 
   output$sports <- renderPlot({
-    TweetScorePlot(input$team_name, input$week)
+    TweetScorePlot(input$team_name, 13)
   })
   
   output$player <- renderPlot({
