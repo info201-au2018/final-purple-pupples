@@ -58,7 +58,7 @@ my_server <- function(input, output){
   })
   output$TV_times <- renderPlot({
     get_tweets()
-  })
+  }, width = 950)
   output$fav <- renderPlot({
     getPlot()
   })

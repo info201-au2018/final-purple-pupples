@@ -10,6 +10,9 @@ trends <- fluidPage(
     there are no borders, and while that certainly makes some topics spread across the globe, other topics seem to stay 
     within a user's country. Explore the differences in topics based on country, or search for a specific topic and see 
     which countries are talking about it! "),
+  p("For the interavtive page click here",
+    a("Interactive page",
+      href = "https://kaitlyncameron.shinyapps.io/TrendingTab/")),
   # Create a new Row in the UI for selectInputs
    fluidRow(
      column(4,
